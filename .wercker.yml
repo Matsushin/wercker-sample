@@ -5,6 +5,9 @@ services:
       POSTGRES_PASSWORD: secret_password
 build:
     steps:
+        - script:
+            name: downgrade rubygem
+            code: gem update --system 2.5.1
         - bundle-install
         - rails-database-yml:
             service: postgresql-docker
