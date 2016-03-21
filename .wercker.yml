@@ -1,0 +1,26 @@
+box: ruby:2.3.0
+services:
+  - id: postgres
+    env:
+      POSTGRES_PASSWORD: secret_password
+build:
+    steps:
+        - script:
+            name: downgrade rubygem
+            code: gem update --system 2.4.8
+        - bundle-install
+        - rails-database-yml:
+            service: postgresql-docker
+        - aussiegeek/install-phantomjs
+        - script:
+            name: echo ruby information
+            code: |
+                echo "ruby version $(ruby --version) running!"
+                echo "from location $(which ruby)"
+                echo -p "gem list: $(gem list)"
+        - script:
+            name: Set up db
+            code: RAILS_ENV=test bundle exec rake db:schema:load
+        - script:
+            name: Run RSpec
+            code: bundle exec rake spec
